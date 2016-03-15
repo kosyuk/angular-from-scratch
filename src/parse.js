@@ -9,7 +9,18 @@ var CONSTANTS = {
 };
 
 var OPERATORS = {
-	'+' : function(){ },
+	'+' : function(self, locals, a, b){ 
+		a = a(self,locals);
+		b = b(self,locals);
+		if (!_.isUndefined(a)){
+			if (!_.isUndefined(b)){
+				return a + b;
+			} else {
+				return a;
+			}
+		}
+		return b;
+	},
 	'!' : function(self, locals, a){  
 		return !a(self, locals);
 	}, 
@@ -506,12 +517,12 @@ Parser.prototype.functionCall = function(fnFn, contextFn) {
 };
 
 Parser.prototype.assignment = function() {
-	var left = this.multiplicative();
+	var left = this.additive();
 	if (this.expect('=')) {
 		if (!left.assign) {
 			throw 'Implies assignment but cannot be assigned to';
 		}
-		var right = this.multiplicative();
+		var right = this.additive();
 		return function(scope, locals) {
 			return left.assign(scope, right(scope, locals), locals);
 		};
@@ -543,6 +554,15 @@ Parser.prototype.multiplicative = function() {
 	var operator;
 	while ((operator = this.expect('*', '/', '%'))) {
 		left = this.binaryFn(left, operator.fn, this.unary());
+	} 
+	return left;
+};
+
+Parser.prototype.additive = function() {
+	var left = this.multiplicative();
+	var operator;
+	while ((operator = this.expect('+', '-'))) {
+		left = this.binaryFn(left, operator.fn, this.multiplicative());
 	} 
 	return left;
 };

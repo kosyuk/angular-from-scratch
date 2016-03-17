@@ -210,7 +210,7 @@ Lexer.prototype.lex = function(text) {
 			this.readNumber();
 		} else if (this.is('\'"')) {
 			this.readString(this.ch);
-		} else if (this.is('[],{}:.()?')) {
+		} else if (this.is('[],{}:.()?;')) {
 			this.tokens.push({
 				text: this.ch
 			});
@@ -411,12 +411,15 @@ function Parser(lexer) {
 
 Parser.prototype.parse = function(text) {
 	this.tokens = this.lexer.lex(text);
-	return this.assignment();
+	return this.statements();
 };
 
 Parser.prototype.primary = function() {
 	var primary;
-	if (this.expect('[')) {
+	if (this.expect('(')) {
+		primary = this.assignment();
+		this.consume(')');
+	} else if (this.expect('[')) {
 		primary = this.arrayDeclaration();
 	} else if (this.expect('{')) {
 		primary = this.object();
@@ -446,7 +449,7 @@ Parser.prototype.primary = function() {
 	return primary;
 };
 
-Parser.prototype.expect = function(e1, e2, e3, e4) {
+Parser.prototype.expect = function(e1,  e2, e3, e4) {
 	var token = this.peek(e1, e2, e3, e4);
 	if (token) {
 		return this.tokens.shift();
@@ -674,6 +677,25 @@ Parser.prototype.ternary = function() {
 		return ternaryFn;
 	} else {
 		return left;
+	}
+};
+
+Parser.prototype.statements = function() {
+	var statements = [];
+	do {
+		statements.push(this.assignment());		
+	} while (this.expect(';'));
+
+	if (statements.length === 1) {
+		return statements[0];
+	} else {
+		return function(self,locals) {
+			var value;
+			_.forEach(statements, function(statement) {
+				value = statement(self, locals);
+			});
+			return value;
+		};
 	}
 };
 

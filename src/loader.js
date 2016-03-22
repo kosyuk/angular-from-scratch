@@ -13,9 +13,14 @@ function setupModuleLoader(window) {
 		if (name === 'hasOwnProperty'){
 			throw 'hasOwnProperty is not a valid module name';
 		}
+		var invokeQueue = [];
 		var moduleInstance = {
 			name: name,
-			requires: requires
+			requires: requires,
+			constant: function(key, value){
+				invokeQueue.push(['constant', [key, value]]);
+			},
+			_invokeQueue: invokeQueue
 		};
 		modules[name] = moduleInstance;
 		return moduleInstance;
@@ -33,12 +38,12 @@ function setupModuleLoader(window) {
 	});
 
 	var getModule = function(name, modules) {
-		console.log('111'+name);
-		console.log(modules);
 		if (modules.hasOwnProperty(name)) {
 			return modules[name];
 		} else {
 			throw 'Module '+name+' is not available!';
 		}
 	};
+
+
 }

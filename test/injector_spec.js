@@ -13,20 +13,32 @@ describe('injector', function(){
 		expect(injector).toBeDefined();
 	});
 
-
-
-});
-/*
 	it('has a constant that has been registerd to a module', function() {
 		var module = angular.module('myModule', []);
 		module.constant('aConstant', 42);
 		var injector = createInjector(['myModule']);
-		expect(injecor.has('aConstant')).toBe(true);		
+		expect(injector.has('aConstant')).toBe(true);		
 	});
 
 	it('has a constant that has been registerd to a module', function() {
 		var module = angular.module('myModule', []);
 		var injector = createInjector(['myModule']);
-		expect(injecor.has('aConstant')).toBe(false);		
+		expect(injector.has('aConstant')).toBe(false);		
 	});
-*/
+
+	it('does not allow a constant calles hasOwnProperty', function() {
+		var module = angular.module('myModule', []);
+		module.constant('hasOwnProperty', _.constant(false));
+		expect(function(){
+			createInjector(['myModule']);
+		}).toThrow();
+	});
+
+	it('can return a registered constant', function() {
+		var module = angular.module('myModule', []);
+		module.constant('aConstant', 42);
+		var injector = createInjector(['myModule']);
+		expect(injector.get('aConstant')).toBe(42);
+	});
+
+});

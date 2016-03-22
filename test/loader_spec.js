@@ -73,6 +73,7 @@ describe('modules', function(){
 			window.angular.module('hasOwnProperty', []);
 		}).toThrow();
 	});
-
-
 });
+
+
+

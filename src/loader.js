@@ -1,4 +1,5 @@
 /* jshint globalstrict: true */
+/* global setupModuleLoader: false */
 'use strict';
 
 function setupModuleLoader(window) {

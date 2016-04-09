@@ -218,7 +218,18 @@ describe('annotate', function(){
 		expect(function(){
 			injector.annotate(fn);
 		}).toThrow();
-		
+
+	});
+
+	it('invokes an array-annotated functions with dependency injection', function(){
+		var module = angular.module('myModule', []);
+		module.constant('a', 1);
+		module.constant('b', 1);
+		var injector = createInjector(['myModule']);
+
+		var fn = function('a', 'b', function(one, two)) { return one + two;};
+
+		expect(injector.invoke(fn)).toBe(3);		
 	});
 
 

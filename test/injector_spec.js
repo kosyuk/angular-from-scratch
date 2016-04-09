@@ -210,6 +210,17 @@ describe('annotate', function(){
 		expect(injector.annotate(fn)).toEqual(['a', 'b', 'c_', '_d', 'an_argument']);
 	});
 
+	it('throws when using a non-annotated fn in strict mode', function(){
+		var injector = createInjector([], true);
+
+		var fn = function(a, b, c) { };
+
+		expect(function(){
+			injector.annotate(fn);
+		}).toThrow();
+		
+	});
+
 
 });
 

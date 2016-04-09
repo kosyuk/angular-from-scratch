@@ -218,20 +218,68 @@ describe('annotate', function(){
 		expect(function(){
 			injector.annotate(fn);
 		}).toThrow();
-
 	});
 
 	it('invokes an array-annotated functions with dependency injection', function(){
 		var module = angular.module('myModule', []);
 		module.constant('a', 1);
-		module.constant('b', 1);
+		module.constant('b', 2);
 		var injector = createInjector(['myModule']);
 
-		var fn = function('a', 'b', function(one, two)) { return one + two;};
+		var fn = ['a', 'b', function(one, two) { 
+			return one + two;
+		}];
 
 		expect(injector.invoke(fn)).toBe(3);		
 	});
 
+	it('invokes a non-annotated function with dependency injection', function(){
+		var module = angular.module('myModule', []);
+		module.constant('a', 1);
+		module.constant('b', 2);
+		var injector = createInjector(['myModule']);
+
+		var fn =  function(a, b) { 
+			return a + b;
+		};
+
+		expect(injector.invoke(fn)).toBe(3);
+	});
+
+/*
+	it('instantiates an annotated constructor function', function(){
+		var module = angular.module('myModule', []);
+		module.constant('a', 1);
+		module.constant('b', 2);
+		var injector = createInjector(['myModule']);
+
+		function Type(one, two){
+			this.result = one + two;
+		}
+		Type.$inject = ['a', 'b'];
+
+		var instance = injector.instantiate(Type);
+		expect(instance.result).toBe(3);
+	});
+
+	it('instantiates an array-annotated constructor function', function(){
+		var module = angular.module('myModule', []);
+		module.constant('a', 1);
+		module.constant('b', 2);
+
+		var injector = createInjector(['myModule']);
+
+		function Type(one, two){
+			this.result = one + two;
+		}
+
+		var instance = injector.instantiate(['a', 'b', Type]);
+		expect(instance.result).toBe(3);
+	});
+
+	it('instantiates an array-annotated constructor function', function(){
+
+	});
+*/	
 
 });
-
